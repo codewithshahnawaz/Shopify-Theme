@@ -1,0 +1,82 @@
+<section class="cfc">
+  {% if section.settings.title != blank %}
+    <h2 class="cfc-t h2">{{ section.settings.title | escape }}</h2>
+  {% endif %}
+  {%- assign collection = collections[section.settings.collection] -%}
+	<div class="cfpw">
+  	{% for product in collection.products limit: 4 %}
+  	<div class="cfpi">
+      <a href="{{ product.url | within: collection }}" class="ssv1">
+        {% if product.featured_image != blank %}
+          <div class="cfpi-i">
+            {% include 'responsive-image' with
+              image: product.featured_image,
+              image_class: "image",
+              wrapper_class: "image-wrapper"
+              max_width: 540,
+              max_height: 540,
+            %}
+          </div>
+        {% endif %}
+
+      	<p>{{ product.title | escape }}</p>
+        <span>
+          {% if product.compare_at_price > product.price %}
+            {% if product.price_varies %}
+              {%- assign sale_price = product.price | money -%}
+              {{ 'products.product.on_sale_from_html' | t: price: sale_price }}
+            {% else %}
+              {{ 'products.product.on_sale' | t }}
+              {{ product.price | money }}
+            {% endif %}
+          {% else %}
+            {% if product.price_varies %}
+              {%- assign price = product.price | money -%}
+              {{ 'products.product.from_text_html' | t: price: price }}
+            {% else %}
+              {{ product.price | money }}
+            {% endif %}
+          {% endif %}
+        </span>
+    </a>
+      </div>
+  {% else %}
+    {% for i in (1..6) %}
+      <div class="cfpi">
+      <a href="#" class="ssv2">
+        {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+        {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg placeholder-svg--small' }}
+
+        <p>{{ 'homepage.onboarding.product_title' | t }}</p>
+        <p>{{ 1999 | money }}</p>
+      </a>
+      </div>
+    {% endfor %}
+  {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Featured collection",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured collection"
+      },
+      {
+        "id": "collection",
+        "type": "collection",
+        "label": "Collection"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured collection",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}

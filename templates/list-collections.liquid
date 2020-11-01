@@ -1,0 +1,62 @@
+{% comment %}
+  This page represents the /collections and /products pages.
+{% endcomment %}
+
+<h1 class="h2" style="margin:20px;text-align:center;">{{ page_title }}</h1>
+<div class="collection-wrapper">
+{% for collection in collections %}
+<div class="collection-item">
+
+  {% unless collection.handle == 'frontpage' %}
+    <a href="{{ collection.url }}" title="{{ 'collections.general.link_title' | t: title: title }}">
+      {% if collection.image != blank or collection.products.first != blank %}
+        {%- assign image_object = collection.image | default: collection.products.first.featured_image -%}
+        {% include 'responsive-image' with
+        image: image_object
+        image_class: "image",
+        wrapper_class: "image-wrapper",
+        max_width: 480,
+        max_height: 480 %}
+      {% else %}
+        {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+        {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg placeholder-svg--small' }}
+      {% endif %}
+    </a>
+    <p class="collection-title class="product-title">
+      <a href="{{ collection.url }}" title="{{ 'collections.general.link_title' | t: title: title }}">{{ collection.title }}</a>
+    </p>
+     <p class="product-title">
+          {% if product.compare_at_price > product.price %}
+
+            {% if product.price_varies %}
+              {%- assign sale_price = product.price | money -%}
+              {{ 'products.product.on_sale_from_html' | t: price: sale_price }}
+            {% else %}
+              {{ 'products.product.on_sale' | t }}
+              {{ product.price | money }}
+            {% endif %}
+
+          {% else %}
+
+            {% if product.price_varies %}
+              {%- assign price = product.price | money -%}
+              {{ 'products.product.from_text_html' | t: price: price }}
+            {% else %}
+              {{ product.price | money }}
+            {% endif %}
+
+          {% endif %}
+
+          {% if product.compare_at_price > product.price %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            <s>{{ product.compare_at_price | money }}</s>
+          {% endif %}
+
+          {% unless product.available %}
+            {{ 'products.product.sold_out' | t }}
+          {% endunless %}
+        </p>
+  {% endunless %}
+</div>
+{% endfor %}
+</div>

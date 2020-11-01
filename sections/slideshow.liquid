@@ -1,0 +1,59 @@
+{%- comment -%}
+  This is a required section for the Shopify Theme Store.
+  It is available when you add the "Image with text" section in the theme editor.
+
+  Theme Store required settings
+  - Image
+  - Heading: title of the block
+  - Text: description of the block
+
+  Theme Store optional settings
+  - Button label: label associated with the button
+  - Button link: link of the button
+{%- endcomment -%}
+
+<section class="slideshow">
+<div class="images">
+{% for block in section.blocks %}
+  {% if block.settings.button_link != blank %}
+      <a class="csib-i" href="{{ block.settings.button_link }}">
+  {% endif %}
+  {% if block.settings.image != blank %}
+      {% include 'responsive-image' with
+        image: block.settings.image,
+        image_class: "image",
+        wrapper_class: "image-wrapper",
+        max_width: block.settings.image.width,
+        max_height: block.settings.image.height %}
+   {% else %}
+      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+   {% endif %}
+	{% if block.settings.button_link != blank %}
+  		</a>
+  	{% endif %}  
+    {% endfor %}      
+    </div>
+</section>
+{% schema %}
+
+  {
+    "name": "slide Show",
+    "blocks": [{
+      "type": "image_picker",
+        "name": "slide Show",
+      "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button link"
+      }
+    ]
+    } 
+    ]
+  }
+{% endschema %}

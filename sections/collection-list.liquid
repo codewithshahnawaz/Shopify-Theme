@@ -1,0 +1,114 @@
+<section class="ccl">
+  {% if section.settings.title != blank %}
+    <h2 class="h2">{{ section.settings.title | escape }}</h2>
+  {% endif %}
+  <div class="cclw">
+  {% for block in section.blocks %}
+    {%- assign collection = collections[block.settings.collection] -%}
+	<div class="cclw-i">
+    <a href="{{ collection.url | default: "#" }}" {{ block.shopify_attributes }}>
+      {% if collection.image != blank or collection.products.first != blank %}
+       {%- assign image_object = collection.image | default: collection.products.first.featured_image -%}
+        <div class="collection-list__image">
+         {% include 'responsive-image' with
+        image: image_object,
+        image_class: "image",
+        wrapper_class: "image-wrapper",
+        max_width: 540,
+        max_height: 540 %}
+        </div>
+        <div>
+        {%- assign default_label = 'homepage.onboarding.collection_title' | t -%}
+      <p class="product-title">{{ collection.title | default: default_label }}</p>
+         <p class="product-title">
+         
+          {% if product.compare_at_price > product.price %}
+
+            {% if product.price_varies %}
+              {%- assign sale_price = product.price | money -%}
+              {{ 'products.product.on_sale_from_html' | t: price: sale_price }}
+            {% else %}
+              {{ 'products.product.on_sale' | t }}
+              {{ product.price | money }}
+            {% endif %}
+
+          {% else %}
+
+            {% if product.price_varies %}
+              {%- assign price = product.price | money -%}
+              {{ 'products.product.from_text_html' | t: price: price }}
+            {% else %}
+              {{ product.price | money }}
+            {% endif %}
+
+          {% endif %}
+
+          {% if product.compare_at_price > product.price %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            <s>{{ product.compare_at_price | money }}</s>
+          {% endif %}
+
+          {% unless product.available %}
+            {{ 'products.product.sold_out' | t }}
+          {% endunless %}
+        </p>
+        </div>
+      {% elsif collection == empty %}
+        {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+        {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg placeholder-svg--small' }} 
+      {% endif %}
+
+      
+    </a>
+  </div>
+  {% endfor %}
+  {% if section.blocks.size == 0 %}
+    {% include 'no-blocks' %}
+  {% endif %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Collection list",
+    "max_blocks": 12,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
